@@ -88,8 +88,8 @@ void win_buttons_show() {
   window_set_click_config_provider(window, click_config_provider);
   //Show the window
   //window_stack_pop_all(false);
-  read_presets();
   window_stack_push(window, true);
+  read_presets();
 }
 
 
