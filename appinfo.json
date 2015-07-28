@@ -1,0 +1,40 @@
+{
+    "appKeys": {
+        "buttonId": 2,
+        "cmd": 0,
+        "ip": 1,
+        "newVolume": 4,
+        "value": 3
+    },
+    "capabilities": [
+        ""
+    ],
+    "companyName": "roey@benamotz.com",
+    "longName": "SoundTouch",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/voldown.png",
+                "name": "IMAGE_VOLUME_DOWN",
+                "type": "png"
+            },
+            {
+                "file": "images/volup.png",
+                "name": "IMAGE_VOLUME_UP",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "SoundTouch",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "bcfd7d79-da19-490a-8d59-27dc9ff812bf",
+    "versionLabel": "1.3",
+    "watchapp": {
+        "watchface": false
+    }
+}
