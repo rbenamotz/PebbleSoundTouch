@@ -74,7 +74,7 @@ Pebble.addEventListener("appmessage",
     if (cmd===7)
       getPresets();
     if (cmd===8)
-      shutOff();
+      pressButton("POWER");
   });
 
 function getNowPlaying() {
@@ -123,20 +123,16 @@ function setIp(cmd, newIp) {
          });
 }
 function pushButton(buttonId) {
-  var body = "<key state=\"release\" sender=\"Gabbo\">PRESET_" + (buttonId + 1) + "</key>";
-  apiCall("key","post",body,
-         function(p) {
-           //sendMessage(1);
-         });
+  pressButton("PRESET_" + (buttonId + 1));
 }
+
 function getVolume() {
-            apiCall("volume","get",null,
-                    function (p) {
-                      var msg = {};
-                      msg["20"]= parseInt(readElement(p,/<actualvolume>(.+?)<\/actualvolume>/m));
-                      Pebble.sendAppMessage(msg);
-                    }, null);
-  
+  apiCall("volume","get",null,
+          function (p) {
+            var msg = {};
+            msg["20"]= parseInt(readElement(p,/<actualvolume>(.+?)<\/actualvolume>/m));
+            Pebble.sendAppMessage(msg);
+          }, null);
 }
 function setVolume(newVolume) {
   console.log("Setting volume to  " + newVolume);
@@ -144,9 +140,13 @@ function setVolume(newVolume) {
   apiCall("volume","post",body,null, null);
 }
 
-function shutOff() {
-  var body = "<key state=\"release\" sender=\"Gabbo\">POWER</key>";
-  apiCall("key","post",body);
+function pressButton(buttonCode) {
+  var body = "<key state=\"press\" sender=\"Gabbo\">" + buttonCode + "</key>";
+  apiCall("key","post",body, 
+         function (p) {
+           body = "<key state=\"release\" sender=\"Gabbo\">" + buttonCode + "</key>";
+           apiCall("key","post",body);
+         });
 }
 
 

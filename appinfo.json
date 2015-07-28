@@ -13,7 +13,28 @@
     "longName": "SoundTouch",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/off.png",
+                "name": "IMAGE_OFF",
+                "type": "png"
+            },
+            {
+                "file": "images/buttons.png",
+                "name": "IMAGE_BUTTONS",
+                "type": "png"
+            },
+            {
+                "file": "images/voldown.png",
+                "name": "IMAGE_VOLUME_DOWN",
+                "type": "png"
+            },
+            {
+                "file": "images/volup.png",
+                "name": "IMAGE_VOLUME_UP",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "SoundTouch",

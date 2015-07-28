@@ -52,6 +52,7 @@ void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
 }
 void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
   shut_off();
+  win_buttons_show();
 }
 
 
@@ -119,19 +120,15 @@ void win_now_playing_show() {
   y+=10;
 
   //Action Bar
-  //icon_volume_up = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_VOL_UP);
-  //icon_volume_down = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_VOL_DOWN);
-  //icon_button_selection = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_PRESETS);
-  //icon_button_shut_off = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_OFF);
+  icon_volume_up = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_VOLUME_UP);
+  icon_volume_down = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_VOLUME_DOWN);
+  icon_button_selection = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BUTTONS);
+  icon_button_shut_off = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_OFF);
   action_bar = action_bar_layer_create();
   action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_volume_up);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, icon_button_selection);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_volume_down);
-  #ifdef PBL_COLOR
-    action_bar_layer_set_background_color(action_bar,GColorCeleste);
-  #else
-    action_bar_layer_set_background_color(action_bar,GColorWhite);
-  #endif
+  action_bar_layer_set_background_color(action_bar,GColorWhite);
   action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
   
   action_bar_layer_add_to_window(action_bar, window);  
