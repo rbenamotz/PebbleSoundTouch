@@ -1,10 +1,10 @@
 {
     "appKeys": {
-        "buttonId": 2,
         "cmd": 0,
         "ip": 1,
-        "newVolume": 4,
-        "value": 3
+        "buttonId": 2,
+        "value": 3,
+        "newVolume": 4
     },
     "capabilities": [
         ""
