@@ -47,6 +47,9 @@ void win_buttons_show() {
   for (int i=0; i<6; i++)
     snprintf(button[i], sizeof(button[i]), "%d", i+1);
   Window* window = window_create();
+  #ifndef PBL_COLOR
+  window_set_fullscreen(window,true);
+  #endif
   Layer* root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
   int w = 42;
@@ -98,12 +101,12 @@ void win_buttons_refresh_data() {
     return;
   for (int i=0; i<6; i++) {
     if (i==selected_channel) {
-      text_layer_set_text_color(txt_button[i], conf_text_color_bg);
-      text_layer_set_background_color(txt_button[i], conf_text_color_fg);
+      text_layer_set_text_color(txt_button[i], conf_title_text_color_fg);
+      text_layer_set_background_color(txt_button[i], conf_title_text_color_bg);
     }
     else {
-      text_layer_set_text_color(txt_button[i], conf_text_color_fg);
-      text_layer_set_background_color(txt_button[i], conf_text_color_bg);
+      text_layer_set_text_color(txt_button[i], conf_title_text_color_bg);
+      text_layer_set_background_color(txt_button[i], conf_title_text_color_fg);
     }
   }
   text_layer_set_text(txt_info, presets[selected_channel]);

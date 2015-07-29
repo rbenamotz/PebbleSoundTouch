@@ -69,7 +69,7 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context)  {
       case KEY_CMD_VALUE:
         commandValue = (int) t->value->int32;
         if (executdCommand == CMD_JS_READY) {
-          is_js_ready = (commandValue==1);
+          is_js_ready = true;
         }
         if (executdCommand == CMD_SET_IP || executdCommand == CMD_VALIDATE_IP) {
           is_ip_validated = (commandValue==1);

@@ -18,11 +18,15 @@ void init_model() {
   volume = 0;
 
   #ifdef PBL_COLOR
-    conf_text_color_fg = GColorDarkGreen;
-    conf_text_color_bg = GColorMediumSpringGreen;
+    conf_text_color_fg = GColorOxfordBlue;
+    conf_text_color_bg = GColorWhite;
+    conf_title_text_color_fg = GColorDarkGreen;
+    conf_title_text_color_bg = GColorMediumSpringGreen;
   #else
-    conf_text_color_fg = GColorWhite;
-    conf_text_color_bg = GColorBlack;
+    conf_text_color_fg = GColorBlack;
+    conf_text_color_bg = GColorWhite;
+    conf_title_text_color_fg = GColorWhite;
+    conf_title_text_color_bg = GColorBlack;
   #endif
 
 }

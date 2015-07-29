@@ -7,11 +7,8 @@
 #define spacer 2
 
 
-static TextLayer* txt_artist;
-static TextLayer* txt_track;
-static TextLayer* txt_album;
-static TextLayer* txt_item_name;
 static Layer *volume_layer;
+static Layer *now_playing_layer;
 static ActionBarLayer *action_bar;
 static bool screen_loaded = false;
 static AppTimer *refreshTimer;
@@ -28,11 +25,8 @@ static void callBack()  {
 }
 
 static void onUnload(Window *window) {
-  text_layer_destroy(txt_artist);
-  text_layer_destroy(txt_track);
-  text_layer_destroy(txt_album);
-  text_layer_destroy(txt_item_name);
   layer_destroy(volume_layer);
+  layer_destroy(now_playing_layer);
   action_bar_layer_destroy(action_bar);
   gbitmap_destroy(icon_volume_up);
   gbitmap_destroy(icon_volume_down);
@@ -52,6 +46,7 @@ void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
 }
 void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
   shut_off();
+  action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, icon_button_selection);
   win_buttons_show();
 }
 
@@ -63,6 +58,46 @@ static void click_config_provider(void *context) {
   window_single_repeating_click_subscribe(BUTTON_ID_UP, 50, up_short_click_handler);
   window_single_repeating_click_subscribe(BUTTON_ID_DOWN, 50, down_short_click_handler);
   window_long_click_subscribe(BUTTON_ID_SELECT, 1000, select_long_down_hanlder, select_long_up_hanlder);
+}
+
+static void drawText(GContext* ctx, GRect r, char* text, GFont* font, GColor bg, GColor fg) {
+  graphics_context_set_fill_color(ctx, bg);
+  graphics_context_set_text_color(ctx, fg);
+  graphics_fill_rect(ctx, r,0, GCornerNone);
+  GSize sz = graphics_text_layout_get_content_size(text, font, r, GTextOverflowModeWordWrap, GTextAlignmentCenter);
+  int y = r.origin.y;
+  int h = r.size.h;
+  if (sz.h < r.size.h) {
+    y+= (r.size.h - sz.h) / 2 - 1;
+    h = sz.h;
+  }
+  GRect r1 = GRect(r.origin.x, y, r.size.w, h);
+  graphics_draw_text(ctx, text, font, r1, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+}
+static void now_playing_layer_update_callback(Layer *me, GContext* ctx) {
+  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  GFont* f2 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
+  GRect bounds = layer_get_frame(me);
+  int y = 0;
+  GRect r = GRect(0, y, bounds.size.w, h_artist);
+  drawText(ctx,r,now_playing_item_name,f1,conf_title_text_color_bg,conf_title_text_color_fg);
+  y+=h_artist;
+  char * txt;
+  if (is_system_off) 
+    txt = "System Is OFF";
+  else if (strlen(now_playing_track)==0)
+    txt = now_playing_station_location;
+  else
+    txt = now_playing_track;
+  r = GRect(0, y, bounds.size.w, h_track);
+  drawText(ctx,r,txt,f2,conf_text_color_bg,conf_text_color_fg);
+  y+=h_track;
+  if (is_system_off)
+    txt = "";
+  else
+    txt = now_playing_album;
+  r = GRect(0, y, bounds.size.w, h_artist);
+  drawText(ctx,r,txt,f1,conf_text_color_bg,conf_text_color_fg);  
 }
 
 static void volume_layer_update_callback(Layer *me, GContext* ctx) {
@@ -83,37 +118,22 @@ static void volume_layer_update_callback(Layer *me, GContext* ctx) {
 void win_now_playing_show() {
   screen_loaded = true;
   Window* window = window_create();
+  #ifndef PBL_COLOR
+  window_set_fullscreen(window,true);
+  #endif
   Layer* root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
   int y = 0;
   int w = bounds.size.w - ACTION_BAR_WIDTH;
-  //item name  
-  GRect r = GRect(0, 0, w , h_artist);
-  txt_item_name =  text_layer_create(r);
-  text_layer_set_text_alignment(txt_item_name, GTextAlignmentCenter);
-  text_layer_set_font(txt_item_name, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  #ifdef PBL_COLOR
-    text_layer_set_background_color(txt_item_name,GColorImperialPurple);
-    text_layer_set_text_color(txt_item_name, GColorWhite);
-  #endif
-  layer_add_child(root, text_layer_get_layer(txt_item_name));
-  y+=r.size.h;
-  //Track
-  r = GRect(0, y, w, h_track);
-  txt_track =  text_layer_create(r);
-  text_layer_set_text_alignment(txt_track, GTextAlignmentCenter);
-  text_layer_set_font(txt_track, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  layer_add_child(root, text_layer_get_layer(txt_track));
-  y+=r.size.h;
-  //Album
-  r = GRect(0, y, w, h_artist);
-  txt_album =  text_layer_create(r);
-  text_layer_set_text_alignment(txt_album, GTextAlignmentCenter);
-  text_layer_set_font(txt_album, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  layer_add_child(root, text_layer_get_layer(txt_album));
-  y+=r.size.h;
+  int h = h_artist * 2 + h_track;
+  //now playing
+  GRect r = GRect(0, y, w , h);
+  y =  h + 5;
+  now_playing_layer = layer_create(r);
+  layer_set_update_proc(now_playing_layer, now_playing_layer_update_callback);
+  layer_add_child(root, now_playing_layer);
   //Volume
-  r = GRect(2, y, w-4, 10);
+  r = GRect(0, y, w, 10);
   volume_layer = layer_create(r);
   layer_set_update_proc(volume_layer, volume_layer_update_callback);
   layer_add_child(root, volume_layer);
@@ -141,7 +161,7 @@ void win_now_playing_show() {
   window_stack_pop_all(false);
   window_stack_push(window, false);
   read_volume();
-  callBack();
+  refreshTimer = app_timer_register(1000, callBack, NULL);
 }
 
 
@@ -149,16 +169,5 @@ void win_now_playing_refresh_data() {
   if (!screen_loaded)
     return;
   layer_mark_dirty(volume_layer);
-  if (is_system_off) {
-    //text_layer_set_text(txt_artist, "");
-    text_layer_set_text(txt_track, "System Is Off");
-    text_layer_set_text(txt_album, "");
-    return;
-  }
-  if (strlen(now_playing_track)==0)
-    text_layer_set_text(txt_track, now_playing_station_location);
-  else
-    text_layer_set_text(txt_track, now_playing_track);
-  text_layer_set_text(txt_item_name,now_playing_item_name);
-  text_layer_set_text(txt_album, now_playing_album);
+  layer_mark_dirty(now_playing_layer);
 }

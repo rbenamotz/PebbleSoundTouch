@@ -1,4 +1,5 @@
 var conf = {};
+
 function unescape(str) {
   if (str===null)
     return str;
@@ -24,7 +25,7 @@ var apiCall = function (cmd,  method, body, onload, ontimeout) {
   if (ontimeout===null)
     xhr.ontimeout = function(e) {
       console.log("timeout");
-      Pebble.showSimpleNotificationOnPebble("Timeout",JSON.stringify(e));
+      apiCall(cmd,method,body,onload,ontimeout);
     };
   else {
     xhr.ontimeout = ontimeout;
@@ -48,12 +49,13 @@ function sendMessage(cmd, value) {
   Pebble.sendAppMessage({"cmd": cmd, "value": value});
 }
 
+ 
 
 // Called when JS is ready
 Pebble.addEventListener("ready",
-							function(e) {
-                sendMessage(2,1);
-							});
+                        function(e) {
+                          sendMessage(2,1);
+                        });
 												
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage",

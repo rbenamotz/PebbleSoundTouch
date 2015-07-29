@@ -63,6 +63,9 @@ void show_win_ip() {
   dot[0] = '.';
   dot[1] = '\0';
   Window* window = window_create();
+  #ifndef PBL_COLOR
+  window_set_fullscreen(window,true);
+  #endif
   Layer* root = window_get_root_layer(window);
   GRect root_bounds = layer_get_bounds(root);
   int y = 0;

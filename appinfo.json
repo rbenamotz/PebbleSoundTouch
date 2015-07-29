@@ -15,6 +15,17 @@
     "resources": {
         "media": [
             {
+                "file": "images/small icon.png",
+                "menuIcon": true,
+                "name": "IMAGE_LOGO",
+                "type": "png"
+            },
+            {
+                "file": "images/big_off.png",
+                "name": "IMAGE_BIG_OFF",
+                "type": "png"
+            },
+            {
                 "file": "images/off.png",
                 "name": "IMAGE_OFF",
                 "type": "png"

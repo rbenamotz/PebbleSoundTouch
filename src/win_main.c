@@ -12,10 +12,11 @@ static AppTimer *jsInitTimer;
 
 static void callBack()  {
   if (!is_js_ready) {
-    jsInitTimer = app_timer_register(50, callBack, NULL);
+    jsInitTimer = app_timer_register(100, callBack, NULL);
     return;
   }
   validate_ip();
+  jsInitTimer = app_timer_register(2000, callBack, NULL);
 }
 
 
@@ -27,6 +28,9 @@ static void onUnload(Window *window) {
 void show_win_main() {
   snprintf(message, sizeof(message), "Validating IP address\n%d.%d.%d.%d\n Please wait.", speaker_ip[0],speaker_ip[1],speaker_ip[2],speaker_ip[3]);
   Window* window = window_create();
+  #ifndef PBL_COLOR
+  window_set_fullscreen(window,true);
+  #endif  
   Layer* root = window_get_root_layer(window);
   GRect root_bounds = layer_get_bounds(root);
   txt_message = text_layer_create(root_bounds);
@@ -43,6 +47,7 @@ void show_win_main() {
 }
 
 void validate_ip_completed() {
+  app_timer_cancel(jsInitTimer);
   if (is_ip_validated) {
     win_now_playing_show();
     return;

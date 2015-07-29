@@ -6,6 +6,10 @@ void init_model();
 int speaker_ip[4];
 GColor conf_text_color_fg;
 GColor conf_text_color_bg;
+GColor conf_title_text_color_fg;
+GColor conf_title_text_color_bg;
+
+
 void change_ip_address(int part, int delta);
 //int selected_button;
 bool is_ip_validated;
