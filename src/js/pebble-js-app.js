@@ -3,9 +3,9 @@ var conf = {};
 function unescape(str) {
   if (str===null)
     return str;
-  str = str.replace("&apos;","'");
-  str = str.replace("&amp;","&");
-  str = str.replace("&quot;","\"");
+  str = str.replace(/&apos;/g,"'");
+  str = str.replace(/&amp;/g,"&");
+  str = str.replace(/&quot;/g,"\"");
   return str;
 }
 function readElement(xml, re) {

@@ -2,8 +2,8 @@
 #include "now_playing.h"
 #include "buttons.h"
 #include "comm.h"
-#define h_artist 40
-#define h_track 72
+#define h_source 32
+#define h_track 108
 #define spacer 2
 
 
@@ -72,32 +72,66 @@ static void drawText(GContext* ctx, GRect r, char* text, GFont* font, GColor bg,
     h = sz.h;
   }
   GRect r1 = GRect(r.origin.x, y, r.size.w, h);
-  graphics_draw_text(ctx, text, font, r1, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+  graphics_draw_text(ctx, text, font, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+}
+
+
+static int drawTrackAndArtist(GContext* ctx, int y, GRect bounds) {
+  char * txt1;
+  char * txt2;
+  txt2 = "";
+  if (is_system_off) 
+    txt1 = "System Is OFF";
+  else if (strlen(now_playing_track)==0)
+    txt1 = now_playing_station_location;
+  else {
+    txt1 = now_playing_track;
+    txt2 = now_playing_artist;
+  }
+  GRect r1 = GRect(2, y, bounds.size.w - 2, h_track);
+  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  GFont* f2 = fonts_get_system_font(FONT_KEY_GOTHIC_24);
+  GSize sz = graphics_text_layout_get_content_size(now_playing_track, f1, r1, GTextOverflowModeWordWrap, GTextAlignmentLeft); 
+  GRect r2 = GRect(2, y + sz.h + 2, bounds.size.w - 2, h_track - sz.h - 2);
+  graphics_draw_text(ctx, txt1, f1, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  graphics_draw_text(ctx, txt2, f2, r2, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  return h_track;
+}
+
+static int drawItemName(GContext* ctx, int y, GRect bounds) {
+  GRect r = GRect(0, y, bounds.size.w, h_source);
+  GBitmap *channel_icon = get_image_by_source(now_playing_source);
+  if (channel_icon!=NULL) {
+    r = GRect(0, y, 32, h_source);
+    graphics_draw_bitmap_in_rect(ctx, channel_icon, r);
+    r = GRect(33, y, bounds.size.w - 33, h_source);
+  }
+  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD);
+  char *txt;
+  if (strcmp(SOURCE_AIR_PLAY, now_playing_source)==0) 
+    txt = now_playing_source;
+  else
+    txt = now_playing_item_name;
+  drawText(ctx,r,txt,f1,conf_text_color_bg,conf_text_color_fg);
+  return h_source;
 }
 static void now_playing_layer_update_callback(Layer *me, GContext* ctx) {
-  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  GFont* f2 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
   GRect bounds = layer_get_frame(me);
   int y = 0;
-  GRect r = GRect(0, y, bounds.size.w, h_artist);
-  drawText(ctx,r,now_playing_item_name,f1,conf_title_text_color_bg,conf_title_text_color_fg);
-  y+=h_artist;
-  char * txt;
-  if (is_system_off) 
-    txt = "System Is OFF";
-  else if (strlen(now_playing_track)==0)
-    txt = now_playing_station_location;
-  else
-    txt = now_playing_track;
-  r = GRect(0, y, bounds.size.w, h_track);
-  drawText(ctx,r,txt,f2,conf_text_color_bg,conf_text_color_fg);
+  y+=drawItemName(ctx,y,bounds);
+  graphics_context_set_stroke_color(ctx, conf_stroke_color);
+  graphics_draw_line(ctx, GPoint(0,y), GPoint(bounds.size.w, y));
+  y++;
+  y+=drawTrackAndArtist(ctx,y,bounds);
+  /*
   y+=h_track;
   if (is_system_off)
     txt = "";
   else
     txt = now_playing_album;
-  r = GRect(0, y, bounds.size.w, h_artist);
+  GRect r = GRect(0, y, bounds.size.w, h_artist);
   drawText(ctx,r,txt,f1,conf_text_color_bg,conf_text_color_fg);  
+  */
 }
 
 static void volume_layer_update_callback(Layer *me, GContext* ctx) {
@@ -106,7 +140,7 @@ static void volume_layer_update_callback(Layer *me, GContext* ctx) {
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_draw_rect(ctx, r);
   #ifdef PBL_COLOR
-    graphics_context_set_fill_color(ctx, GColorOrange);
+    graphics_context_set_fill_color(ctx, GColorBlue);
   #endif
   int w = (bounds.size.w - 2) * volume  / 100;
   r = GRect(1, 1, w, bounds.size.h-2);
@@ -123,10 +157,10 @@ void win_now_playing_show() {
   #endif
   Layer* root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
+  //now playing
   int y = 0;
   int w = bounds.size.w - ACTION_BAR_WIDTH;
-  int h = h_artist * 2 + h_track;
-  //now playing
+  int h = h_source + spacer + h_track;
   GRect r = GRect(0, y, w , h);
   y =  h + 5;
   now_playing_layer = layer_create(r);
@@ -144,15 +178,18 @@ void win_now_playing_show() {
   icon_volume_down = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_VOLUME_DOWN);
   icon_button_selection = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BUTTONS);
   icon_button_shut_off = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_OFF);
+  
+  
   action_bar = action_bar_layer_create();
   action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_volume_up);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, icon_button_selection);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_volume_down);
-  action_bar_layer_set_background_color(action_bar,GColorWhite);
+  #ifdef PBL_COLOR
+  action_bar_layer_set_background_color(action_bar,GColorBlue);
+  #endif
   action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
   
   action_bar_layer_add_to_window(action_bar, window);  
-  
   //Handlers
   window_set_window_handlers(window, (WindowHandlers) {
     .unload = onUnload

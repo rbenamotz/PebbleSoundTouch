@@ -1,5 +1,14 @@
 #include <pebble.h>
 #pragma once
+#define SOURCE_AIR_PLAY "AIRPLAY"  
+#define SOURCE_PANDORA "PANDORA"
+#define SOURCE_I_HEART_RADIO "IHEART"
+#define SOURCE_INTERNET_RADIO "INTERNET_RADIO"
+#define SOURCE_STORED_MUSIC "STORED_MUSIC"
+#define SOURCE_DEEZER "DEEZER" 
+#define SOURCE_SPOTIFY "SPOTIFY"
+  
+
   
 
 void init_model();
@@ -8,6 +17,7 @@ GColor conf_text_color_fg;
 GColor conf_text_color_bg;
 GColor conf_title_text_color_fg;
 GColor conf_title_text_color_bg;
+GColor conf_stroke_color;
 
 
 void change_ip_address(int part, int delta);
@@ -27,3 +37,5 @@ char now_playing_station_location[100];
 int volume;
 int selected_channel;
 bool is_system_off;
+
+GBitmap* get_image_by_source(char* source);

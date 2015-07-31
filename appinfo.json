@@ -15,6 +15,41 @@
     "resources": {
         "media": [
             {
+                "file": "images/source_spotify.png",
+                "name": "IMAGE_SOURCE_SPOTIFY",
+                "type": "png"
+            },
+            {
+                "file": "images/source_internet_deezer.png",
+                "name": "IMAGE_SOURCE_DEEZER",
+                "type": "png"
+            },
+            {
+                "file": "images/source_stored_music.png",
+                "name": "IMAGE_SOURCE_STORED_MUSIC",
+                "type": "png"
+            },
+            {
+                "file": "images/source_internet_radio.png",
+                "name": "IMAGE_SOURCE_INTERNET_RADIO",
+                "type": "png"
+            },
+            {
+                "file": "images/source_i_heart_radio.png",
+                "name": "IMAGE_SOURCE_IHEART_RADIO",
+                "type": "png"
+            },
+            {
+                "file": "images/AirplayIcon.png",
+                "name": "IMAGE_SOURCE_AIRPLAY",
+                "type": "png"
+            },
+            {
+                "file": "images/pandora_icon.png",
+                "name": "IMAGE_SOURCE_PANDORA",
+                "type": "png"
+            },
+            {
                 "file": "images/small icon.png",
                 "menuIcon": true,
                 "name": "IMAGE_LOGO",
@@ -54,7 +89,7 @@
         "basalt"
     ],
     "uuid": "3dfcf347-2b39-437f-9c3f-b00ec07a6b53",
-    "versionLabel": "1.3",
+    "versionLabel": "1.5",
     "watchapp": {
         "watchface": false
     }
