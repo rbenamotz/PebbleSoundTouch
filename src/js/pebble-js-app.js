@@ -60,9 +60,7 @@ Pebble.addEventListener("ready",
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage",
   function(e) {
-    console.log("Received: " + JSON.stringify(e.payload));
     var cmd = e.payload.cmd;
-    console.log("cmd=" + cmd);
     if (cmd===0 || cmd==3)
       setIp(cmd,e.payload.ip);
     if (cmd===1)
@@ -77,11 +75,23 @@ Pebble.addEventListener("appmessage",
       getPresets();
     if (cmd===8)
       pressButton("POWER");
+    if (cmd===9)
+      pressButton("PREV_TRACK");
+    if (cmd===10)
+      pressButton("NEXT_TRACK");
+    if (cmd===11)
+      pressButton("PLAY_PAUSE");
   });
 
 function getNowPlaying() {
   apiCall("now_playing","get",null,
           function(p) {
+            var playState = 3;
+            var temp = readElement(p,/<playStatus>(.+?)<\/playStatus>/m);
+            if (temp==="PLAY_STATE")
+              playState = 1;
+            if (temp==="PAUSE_STATE")
+              playState = 2;
             var msg = {};
             msg["10"] = readElement(p,/<artist>(.+?)<\/artist>/m);
             msg["11"] = readElement(p,/<track>(.+?)<\/track>/m);
@@ -89,6 +99,17 @@ function getNowPlaying() {
             msg["13"] = readElement(p,/<itemName>(.+?)<\/itemName>/m);
             msg["14"] = readElement(p,/source=\"(.+?)\"/);
             msg["15"] = readElement(p,/<stationLocation>(.+?)<\/stationLocation>/m);
+            msg["16"] = playState;
+            var re = /<time total="(\d*?)">(\d*?)<\/time>/g;
+            var m = re.exec(p);
+            if (m===null) {
+              msg["17"] = 0;
+              msg["18"] = 0;
+            } else {
+              msg["17"] = parseInt(m[2]);
+              msg["18"] = parseInt(m[1]);
+            }
+            //console.log(JSON.stringify(msg));
             Pebble.sendAppMessage(msg);
           }, null);
 }
@@ -98,16 +119,20 @@ function getPresets() {
   apiCall("presets","get",null,
           function(p) {
             var msg = {};
-            var re = /<itemName>(.+?)<\/itemName>/g;
+            var re =  /<preset.+?id="(\d+?)".+?source="(.+?)".+?<itemName>(.+?)<\/itemName>/g; 
             var m;
             var i = 0;
             while ((m = re.exec(p)) !== null) {
               if (m.index === re.lastIndex) {
                 re.lastIndex++;
               }
-              msg[(1000 + i).toString()] = unescape(m[1]);
+              var id = parseInt(m[1]);
+              //msg[(1000 + id-1).toString()] = unescape(m[1]);
+              msg[(1000 + id-1).toString()] = unescape(m[2]);
+              msg[(1010 + id-1).toString()] = unescape(m[3]);
               i++;
             }
+            //console.log(JSON.stringify(msg));
             Pebble.sendAppMessage(msg);
           }, null);
 }
@@ -147,7 +172,10 @@ function pressButton(buttonCode) {
   apiCall("key","post",body, 
          function (p) {
            body = "<key state=\"release\" sender=\"Gabbo\">" + buttonCode + "</key>";
-           apiCall("key","post",body);
+           apiCall("key","post",body,
+                  function(p) {
+                    getNowPlaying();
+                  });
          });
 }
 

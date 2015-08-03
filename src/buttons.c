@@ -3,6 +3,9 @@
 
 static TextLayer* txt_button[6];
 static TextLayer* txt_info;
+static GBitmap* bmp_big_off_button;
+static BitmapLayer* bmp_source;
+static BitmapLayer* bmp_big_off_button_layer;
 static char button[6][2];
 static bool screen_loaded = false;
 
@@ -26,18 +29,30 @@ static void select_short_click_handler(ClickRecognizerRef recognizer, void *cont
   window_stack_pop(true);
 }
 
+static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
+  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),false);
+}
+static void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
+  shut_off();
+  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),true);
+}
+
 
 static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_UP,up_short_click_handler );
   window_single_click_subscribe(BUTTON_ID_SELECT, select_short_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_short_click_handler);
-  //window_long_click_subscribe(BUTTON_ID_SELECT, 500, select_long_click_handler, NULL);
+  window_long_click_subscribe(BUTTON_ID_SELECT, 0, select_long_down_hanlder, select_long_up_hanlder);
 }
 static void onUnload(Window* window) {
   for (int i=0; i<6; i++)
     text_layer_destroy(txt_button[i]);
   text_layer_destroy(txt_info);
+  bitmap_layer_destroy(bmp_source);
+  bitmap_layer_destroy(bmp_big_off_button_layer);
+  gbitmap_destroy(bmp_big_off_button);
   screen_loaded = false;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "buttons.onUnload");
 }
 
 
@@ -72,16 +87,28 @@ void win_buttons_show() {
       y+=h+5;
       r.origin.y = y;
     }
-    if (strcmp(now_playing_item_name, presets[i])==0)
+    if (strcmp(now_playing_item_name, presets_description[i])==0)
       selected_channel = i;
   }
-  y = h*2 + 10*2;
+  y = h * 2 + 10 * 2;
+  //bitmap source
+  r = GRect(0, y , 32, 32);
+  bmp_source = bitmap_layer_create(r);
+  layer_add_child(root, bitmap_layer_get_layer(bmp_source));
   //text
-  r = GRect(0, y, bounds.size.w, bounds.size.h - y);
+  r = GRect(32, y, bounds.size.w - 32, bounds.size.h - y);
   txt_info =  text_layer_create(r);
   text_layer_set_text_alignment(txt_info, GTextAlignmentCenter);
   text_layer_set_font(txt_info, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   layer_add_child(root, text_layer_get_layer(txt_info));
+  //Big Off Button
+  bmp_big_off_button = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BIG_OFF);
+  bmp_big_off_button_layer = bitmap_layer_create(bounds);
+  bitmap_layer_set_bitmap(bmp_big_off_button_layer,bmp_big_off_button);
+  bitmap_layer_set_alignment(bmp_big_off_button_layer,GAlignCenter);
+  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),true);
+  layer_add_child(root, bitmap_layer_get_layer(bmp_big_off_button_layer));
+  
   //Refresh
   win_buttons_refresh_data();
   //Handlers
@@ -109,5 +136,8 @@ void win_buttons_refresh_data() {
       text_layer_set_background_color(txt_button[i], conf_title_text_color_fg);
     }
   }
-  text_layer_set_text(txt_info, presets[selected_channel]);
+  text_layer_set_text(txt_info, presets_description[selected_channel]);
+  GBitmap *channel_icon = get_image_by_source(presets_source[selected_channel]);
+  bitmap_layer_set_bitmap(bmp_source,channel_icon);
+  
 }

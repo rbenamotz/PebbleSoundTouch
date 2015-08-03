@@ -12,3 +12,6 @@ void read_volume();
 void change_volume(int delta);
 void read_presets();
 void shut_off();
+void prev_track();
+void next_track();
+void play_pause();

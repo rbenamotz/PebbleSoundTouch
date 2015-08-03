@@ -15,6 +15,26 @@
     "resources": {
         "media": [
             {
+                "file": "images/music_icon_play.png",
+                "name": "IMAGE_PLAY",
+                "type": "png"
+            },
+            {
+                "file": "images/music_icon_pause.png",
+                "name": "IMAGE_PAUSE",
+                "type": "png"
+            },
+            {
+                "file": "images/music_icon_forward.png",
+                "name": "IMAGE_SKIP_FW",
+                "type": "png"
+            },
+            {
+                "file": "images/music_icon_back.png",
+                "name": "IMAGE_SKIP_BW",
+                "type": "png"
+            },
+            {
                 "file": "images/source_spotify.png",
                 "name": "IMAGE_SOURCE_SPOTIFY",
                 "type": "png"
@@ -89,7 +109,7 @@
         "basalt"
     ],
     "uuid": "3dfcf347-2b39-437f-9c3f-b00ec07a6b53",
-    "versionLabel": "1.5",
+    "versionLabel": "1.6",
     "watchapp": {
         "watchface": false
     }

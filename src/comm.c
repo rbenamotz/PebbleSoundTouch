@@ -15,6 +15,9 @@
 #define CMD_GET_VOLUME 6
 #define CMD_GET_PRESETS 7
 #define CMD_SHUT_OFF 8
+#define CMD_PREV_TRACK 9
+#define CMD_NEXT_TRACK 10
+#define CMD_PLAY_PAUSE 11
   
   
 #define KEY_CMD_EXECUTED 0
@@ -28,6 +31,9 @@
 #define KEY_NOW_PLAYING_ITEM_NAME 13
 #define KEY_NOW_PLAYING_SOURCE 14
 #define KEY_NOW_PLAYING_STATION_LOCATION 15
+#define KEY_NOW_PLAYING_PLAY_STATE 16
+#define KEY_NOW_PLAYING_TIME_POSITION 17
+#define KEY_NOW_PLAYING_TIME_TOTAL 18
 #define KEY_VOLUME 20
 
 
@@ -94,12 +100,24 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context)  {
       case KEY_NOW_PLAYING_STATION_LOCATION:
         snprintf(now_playing_station_location, sizeof(now_playing_station_location), "%s", t->value->cstring);
         break;
+      case KEY_NOW_PLAYING_PLAY_STATE:
+        now_playing_state = (int) t->value->int32;
+        break;
       case KEY_VOLUME:
         volume = (int) t->value->int32;
         break;
+      case KEY_NOW_PLAYING_TIME_POSITION:
+        now_playing_time_position = (int) t->value->int32;
+        break;
+      case KEY_NOW_PLAYING_TIME_TOTAL:
+        now_playing_time_total = (int) t->value->int32;
+        break;
       default:
-        if (i>=1000 && i<1010) { //Presets Descriptions 
-          snprintf(presets[i - 1000], sizeof(presets[i - 1000]), "%s", t->value->cstring);
+        if (i>=1000 && i<1010) { //Presets source 
+          snprintf(presets_source[i - 1000], sizeof(presets_source[i - 1000]), "%s", t->value->cstring);
+        } 
+        if (i>=1010 && i<1020) { //Presets Descriptions 
+          snprintf(presets_description[i - 1010], sizeof(presets_description[i - 1010]), "%s", t->value->cstring);
         } 
     }
     t = dict_read_next(iterator);
@@ -206,5 +224,27 @@ void shut_off() {
 	dict_write_end(iter);
   app_message_outbox_send();
 }
+void prev_track() {
+	DictionaryIterator *iter;
+	app_message_outbox_begin(&iter);
+  dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_PREV_TRACK);
+	dict_write_end(iter);
+  app_message_outbox_send();
+}
+void next_track() {
+	DictionaryIterator *iter;
+	app_message_outbox_begin(&iter);
+  dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_NEXT_TRACK);
+	dict_write_end(iter);
+  app_message_outbox_send();
+}
+void play_pause() {
+	DictionaryIterator *iter;
+	app_message_outbox_begin(&iter);
+  dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_PLAY_PAUSE);
+	dict_write_end(iter);
+  app_message_outbox_send();
+}
+
 
 
