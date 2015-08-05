@@ -180,7 +180,7 @@ void validate_ip() {
 }
 
 void read_now_playing() {
-  APP_LOG(APP_LOG_LEVEL_INFO,"read_now_playing_and_volume");
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE,"read_now_playing");
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
   dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_GET_NOW_PLAYING);

@@ -34,6 +34,7 @@ static void callBack()  {
 }
 
 static void onUnload(Window *window) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.onUnload");
   layer_destroy(now_playing_time_layer);
   layer_destroy(now_playing_layer);
   action_bar_layer_destroy(action_bar);
@@ -46,6 +47,16 @@ static void onUnload(Window *window) {
   gbitmap_destroy(icon_play);
   gbitmap_destroy(icon_pause);
   screen_loaded = false;  
+}
+
+static void on_appear(Window *window) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.on_appear");
+  read_now_playing();
+  refreshTimer = app_timer_register(5000, callBack, NULL); 
+}
+static void on_disappear(Window *window) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.on_disappear");
+  app_timer_cancel(refreshTimer);
 }
 
 void set_action_bar_icons() {
@@ -64,6 +75,7 @@ void hideVolumeLayer() {
 
 static void handle_volume_change() {
   if (!shouldShowVolume) {
+    //first time function called. Need to change icons in the action bar
     action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_volume_up);
     action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_volume_down);
   }
@@ -270,13 +282,14 @@ void win_now_playing_show() {
   action_bar_layer_add_to_window(action_bar, window);  
   //Handlers
   window_set_window_handlers(window, (WindowHandlers) {
-    .unload = onUnload
+    .unload = onUnload,
+    .appear = on_appear,
+    .disappear = on_disappear
   });
   //Show the window
   window_stack_pop_all(false);
   window_stack_push(window, false);
   read_volume();
-  refreshTimer = app_timer_register(1000, callBack, NULL);
 }
 
 

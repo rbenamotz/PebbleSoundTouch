@@ -35,6 +35,7 @@ static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *conte
 static void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
   shut_off();
   layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),true);
+  window_stack_pop(true);
 }
 
 
@@ -74,7 +75,12 @@ void win_buttons_show() {
   int y = 5;
   //buttons
   GRect r = GRect(x, y, w, h);
+  #ifdef PBL_COLOR
+  GFont font = fonts_get_system_font(FONT_KEY_LECO_42_NUMBERS);
+  #else
   GFont* font = fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS);
+  #endif
+  
   for (int i=0; i<6; i++) {
     txt_button[i] = text_layer_create(r);
     text_layer_set_text_alignment(txt_button[i], GTextAlignmentCenter);
