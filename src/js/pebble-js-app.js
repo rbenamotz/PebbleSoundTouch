@@ -109,8 +109,12 @@ function getNowPlaying() {
               msg["17"] = parseInt(m[2]);
               msg["18"] = parseInt(m[1]);
             }
-            //console.log(JSON.stringify(msg));
-            Pebble.sendAppMessage(msg);
+            apiCall("volume","get",null,
+                    function (p) {
+                      msg["20"]= parseInt(readElement(p,/<actualvolume>(.+?)<\/actualvolume>/m));
+                      //console.log(JSON.stringify(msg));
+                      Pebble.sendAppMessage(msg);
+                    }, null);
           }, null);
 }
 
@@ -154,10 +158,12 @@ function pushButton(buttonId) {
 }
 
 function getVolume() {
+  console.log("getVolume");
   apiCall("volume","get",null,
           function (p) {
             var msg = {};
             msg["20"]= parseInt(readElement(p,/<actualvolume>(.+?)<\/actualvolume>/m));
+            console.log(JSON.stringify(msg));
             Pebble.sendAppMessage(msg);
           }, null);
 }

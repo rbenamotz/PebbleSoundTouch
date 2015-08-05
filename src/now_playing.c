@@ -25,6 +25,7 @@ static AppTimer *volumeHideTimer = NULL;
 static AppTimer *nextVolumeChangeTimer = NULL;
 static int volume_delta = 0;
 static bool should_update_select_button = true;
+int volume_change_counter;
 
 static void callBack()  {
   read_now_playing();
@@ -76,30 +77,42 @@ void hideVolumeLayer() {
 static void handle_volume_change() {
   if (!shouldShowVolume) {
     //first time function called. Need to change icons in the action bar
+    app_timer_cancel(refreshTimer);
     action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_volume_up);
     action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_volume_down);
   }
   shouldShowVolume = true;
-  change_volume(volume_delta);
+  volume_change_counter++;
+  int newVolume = volume + volume_delta;
+  if (newVolume<100 && newVolume>=0) {
+    volume = newVolume;
+    layer_mark_dirty(now_playing_layer);
+  }
+  if (volume_change_counter%3==0) {
+    change_volume();
+  }
   nextVolumeChangeTimer = app_timer_register(50, handle_volume_change,NULL);
 }
 
 void up_long_down_hanlder(ClickRecognizerRef recognizer, void *context) {
   volume_delta = 1;
+  volume_change_counter = 0;
   handle_volume_change();
 }
 void down_long_down_hanlder(ClickRecognizerRef recognizer, void *context) {
   volume_delta = -1;
+  volume_change_counter = 0;
   handle_volume_change();
 }
 
 void up_down_long_up_handler(ClickRecognizerRef recognizer, void *context) {
   app_timer_cancel(nextVolumeChangeTimer);
+  change_volume();
   if (volumeHideTimer==NULL)
     volumeHideTimer = app_timer_register(1000, hideVolumeLayer,NULL);
   else
     app_timer_reschedule(volumeHideTimer, 1000);
-  
+  refreshTimer = app_timer_register(1000, callBack, NULL); 
 }
 static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
   action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, icon_button_selection);
@@ -289,7 +302,6 @@ void win_now_playing_show() {
   //Show the window
   window_stack_pop_all(false);
   window_stack_push(window, false);
-  read_volume();
 }
 
 

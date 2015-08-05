@@ -70,7 +70,7 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context)  {
     switch(i) {
       case KEY_CMD_EXECUTED:
         executdCommand = (int) t->value->int32;
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "Command Executed: %i" , executdCommand);
+        //APP_LOG(APP_LOG_LEVEL_DEBUG, "Command Executed: %i" , executdCommand);
         break;
       case KEY_CMD_VALUE:
         commandValue = (int) t->value->int32;
@@ -104,6 +104,7 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context)  {
         now_playing_state = (int) t->value->int32;
         break;
       case KEY_VOLUME:
+        //APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "Setting volume from server to : %i", (int) t->value->int32);
         volume = (int) t->value->int32;
         break;
       case KEY_NOW_PLAYING_TIME_POSITION:
@@ -189,6 +190,7 @@ void read_now_playing() {
 }
 
 void read_volume() {
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE,"read_volume");
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
   dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_GET_VOLUME);
@@ -204,17 +206,13 @@ void read_presets() {
   app_message_outbox_send();
 }
 
-void change_volume(int delta) {
-  int newVolume = volume + delta;
-  if (newVolume>100 || newVolume<0)
-    return;
+void change_volume() {
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
   dict_write_uint8(iter, KEY_CMD_EXECUTED,CMD_SET_VOLUME);
-  dict_write_uint8(iter, KEY_NEW_VOLUME,newVolume);
+  dict_write_uint8(iter, KEY_NEW_VOLUME,volume);
 	dict_write_end(iter);
   app_message_outbox_send();
-  volume = newVolume;
   win_now_playing_refresh_data();
 }
 void shut_off() {
