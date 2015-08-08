@@ -9,6 +9,7 @@
 static TextLayer* txt_message;
 static char message[120];
 static AppTimer *jsInitTimer;
+static bool should_ignore_ip_validation = false;
 
 static void callBack()  {
   if (!is_js_ready) {
@@ -24,9 +25,23 @@ static void onUnload(Window *window) {
   text_layer_destroy(txt_message);
 }
 
+static void manulay_go_to_config() {
+  app_timer_cancel(jsInitTimer);
+  should_ignore_ip_validation = true;
+  show_win_ip();
+}
+
+
+static void click_config_provider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_UP,manulay_go_to_config);
+  window_single_click_subscribe(BUTTON_ID_SELECT,manulay_go_to_config);
+  window_single_click_subscribe(BUTTON_ID_DOWN,manulay_go_to_config);
+}
+
+
 
 void show_win_main() {
-  snprintf(message, sizeof(message), "Validating IP address\n%d.%d.%d.%d\n Please wait.", speaker_ip[0],speaker_ip[1],speaker_ip[2],speaker_ip[3]);
+  snprintf(message, sizeof(message), "Validating config.\n Please wait or click any button for IP config");
   Window* window = window_create();
   #ifndef PBL_COLOR
   window_set_fullscreen(window,true);
@@ -34,11 +49,12 @@ void show_win_main() {
   Layer* root = window_get_root_layer(window);
   GRect root_bounds = layer_get_bounds(root);
   txt_message = text_layer_create(root_bounds);
-  text_layer_set_font(txt_message, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  text_layer_set_text_alignment(txt_message, GTextAlignmentCenter);
+  text_layer_set_font(txt_message, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(txt_message, GTextAlignmentLeft);
   text_layer_set_text(txt_message,message);
   layer_add_child(root, text_layer_get_layer(txt_message));
   //Handlers
+  window_set_click_config_provider(window, click_config_provider);
   window_set_window_handlers(window, (WindowHandlers) {
     .unload = onUnload
   });
@@ -47,6 +63,8 @@ void show_win_main() {
 }
 
 void validate_ip_completed() {
+  if (should_ignore_ip_validation)
+    return;
   app_timer_cancel(jsInitTimer);
   if (is_ip_validated) {
     win_now_playing_show();

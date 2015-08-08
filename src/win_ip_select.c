@@ -13,7 +13,7 @@ static char dot[2];
 static char ip_text[4][4];
 static char* header = "IP Address";
 static char* submit = "(Long click when done)";
-static char* instructions = "Please enter the IP address of your Bose SoundTouch Speaker";
+static char* instructions = "Please enter the IP address of your Bose SoundTouch system";
 static int current_selection;
 
 
@@ -131,12 +131,12 @@ void win_ip_refresh_data() {
   for (int i=0; i<4; i++) {
     snprintf(ip_text[i], sizeof(ip_text[i]), "%d", speaker_ip[i]);
     if (i==current_selection) {
-      text_layer_set_text_color(txt_ip_part[i], conf_text_color_bg);
-      text_layer_set_background_color(txt_ip_part[i], conf_text_color_fg);
+      text_layer_set_text_color(txt_ip_part[i], conf_title_text_color_bg);
+      text_layer_set_background_color(txt_ip_part[i], conf_title_text_color_fg);
     }
     else {
-      text_layer_set_text_color(txt_ip_part[i], conf_text_color_fg);
-      text_layer_set_background_color(txt_ip_part[i], conf_text_color_bg);
+      text_layer_set_text_color(txt_ip_part[i], conf_title_text_color_fg);
+      text_layer_set_background_color(txt_ip_part[i], conf_title_text_color_bg);
     }
     text_layer_set_text(txt_ip_part[i],ip_text[i]);
   }
