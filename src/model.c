@@ -41,6 +41,7 @@ void init_model() {
   icon_source[6] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SOURCE_SPOTIFY);
   icon_source[7] = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_SOURCE_IHEART_RADIO);
   now_playing_state = PLAY_STATE_UNKNOWN;
+  flag_should_ignore_volume_reading = false;
 }
 
 void change_ip_address(int part, int delta) {

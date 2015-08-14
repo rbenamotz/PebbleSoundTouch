@@ -20,7 +20,7 @@ var apiCall = function (cmd,  method, body, onload, ontimeout) {
   if (onload)
     xhr.onload = function(e) {onload(xhr.responseText);};
   xhr.onerror = function(e) {
-    Pebble.showSimpleNotificationOnPebble("Error",JSON.stringify(e));
+    console.log("Error - " + JSON.stringify(e));
   };
   if (ontimeout===null)
     xhr.ontimeout = function(e) {
@@ -31,7 +31,7 @@ var apiCall = function (cmd,  method, body, onload, ontimeout) {
     xhr.ontimeout = ontimeout;
   }
   try {
-    console.log("Opening " + url + " (" + method + "):" + body);
+    //console.log("Opening " + url + " (" + method + "):" + body);
     xhr.open(method, url);
     xhr.timeout = 2000;
     xhr.send(body);
@@ -142,12 +142,12 @@ function getPresets() {
 }
 
 function setIp(cmd, newIp) {
-  console.log("Setting ip to " + newIp);
   conf.speakerIp = newIp;
   apiCall("info","get",null,
          function(p) {
-           getPresets();
            sendMessage(cmd,1);
+           getPresets();
+           setInterval(getNowPlaying,3000);
          },
          function(p) {
            sendMessage(cmd,0);

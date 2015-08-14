@@ -104,7 +104,8 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context)  {
         now_playing_state = (int) t->value->int32;
         break;
       case KEY_VOLUME:
-        //APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "Setting volume from server to : %i", (int) t->value->int32);
+        if (flag_should_ignore_volume_reading)
+          break;
         volume = (int) t->value->int32;
         break;
       case KEY_NOW_PLAYING_TIME_POSITION:

@@ -51,3 +51,5 @@ int selected_channel;
 bool is_system_off;
 
 GBitmap* get_image_by_source(char* source);
+
+bool flag_should_ignore_volume_reading;

@@ -3,10 +3,11 @@
 
 static TextLayer* txt_button[6];
 static TextLayer* txt_info;
-static GBitmap* bmp_big_off_button;
+//static GBitmap* bmp_big_off_button;
 static BitmapLayer* bmp_source;
-static BitmapLayer* bmp_big_off_button_layer;
+//static BitmapLayer* bmp_big_off_button_layer;
 static char button[6][2];
+static char power_off_text[6][2];
 static bool screen_loaded = false;
 
 
@@ -30,11 +31,17 @@ static void select_short_click_handler(ClickRecognizerRef recognizer, void *cont
 }
 
 static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
-  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),false);
+  //layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),false);
+  GFont* font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
+  for (int i=0; i<6; i++) {
+    text_layer_set_text_color(txt_button[i], conf_title_text_color_fg);
+    text_layer_set_background_color(txt_button[i], conf_title_text_color_bg);
+    text_layer_set_text(txt_button[i], power_off_text[i]);
+    text_layer_set_font(txt_button[i], font);
+  }
 }
 static void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
   shut_off();
-  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),true);
   window_stack_pop(true);
 }
 
@@ -50,8 +57,6 @@ static void onUnload(Window* window) {
     text_layer_destroy(txt_button[i]);
   text_layer_destroy(txt_info);
   bitmap_layer_destroy(bmp_source);
-  bitmap_layer_destroy(bmp_big_off_button_layer);
-  gbitmap_destroy(bmp_big_off_button);
   screen_loaded = false;
   APP_LOG(APP_LOG_LEVEL_DEBUG, "buttons.onUnload");
 }
@@ -60,8 +65,16 @@ static void onUnload(Window* window) {
 
 void win_buttons_show() {
   screen_loaded = true;
-  for (int i=0; i<6; i++)
+  for (int i=0; i<6; i++) {
     snprintf(button[i], sizeof(button[i]), "%d", i+1);
+  }
+  snprintf(power_off_text[0], sizeof(power_off_text[0]), "S");
+  snprintf(power_off_text[1], sizeof(power_off_text[1]), "Y");
+  snprintf(power_off_text[2], sizeof(power_off_text[2]), "S");
+  snprintf(power_off_text[3], sizeof(power_off_text[3]), "O");
+  snprintf(power_off_text[4], sizeof(power_off_text[4]), "F");
+  snprintf(power_off_text[5], sizeof(power_off_text[5]), "F");
+  
   Window* window = window_create();
   #ifndef PBL_COLOR
   window_set_fullscreen(window,true);
@@ -107,13 +120,6 @@ void win_buttons_show() {
   text_layer_set_text_alignment(txt_info, GTextAlignmentCenter);
   text_layer_set_font(txt_info, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   layer_add_child(root, text_layer_get_layer(txt_info));
-  //Big Off Button
-  bmp_big_off_button = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BIG_OFF);
-  bmp_big_off_button_layer = bitmap_layer_create(bounds);
-  bitmap_layer_set_bitmap(bmp_big_off_button_layer,bmp_big_off_button);
-  bitmap_layer_set_alignment(bmp_big_off_button_layer,GAlignCenter);
-  layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),true);
-  layer_add_child(root, bitmap_layer_get_layer(bmp_big_off_button_layer));
   
   //Refresh
   win_buttons_refresh_data();
