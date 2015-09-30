@@ -22,18 +22,10 @@ static GBitmap* icon_pause;
 static bool shouldShowVolume = false;
 static AppTimer *volumeHideTimer = NULL;
 static AppTimer *nextVolumeChangeTimer = NULL;
-//static AppTimer *refreshTimer;
 static int volume_delta = 0;
 static bool should_update_select_button = true;
 int volume_change_counter;
 
-/*
-static void callBack()  {
-  return;
-  read_now_playing();
-  refreshTimer = app_timer_register(5000, callBack, NULL);
-}
-*/
 
 static void onUnload(Window *window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.onUnload");
@@ -54,11 +46,9 @@ static void onUnload(Window *window) {
 static void on_appear(Window *window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.on_appear");
   read_now_playing();
-  //refreshTimer = app_timer_register(5000, callBack, NULL); 
 }
 static void on_disappear(Window *window) {
   APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "now_playing.on_disappear");
-  //app_timer_cancel(refreshTimer);
 }
 
 void set_action_bar_icons() {
@@ -78,7 +68,6 @@ void hideVolumeLayer() {
 static void handle_volume_change() {
   if (!shouldShowVolume) {
     //first time function called. Need to change icons in the action bar
-    //app_timer_cancel(refreshTimer);
     flag_should_ignore_volume_reading = true;
     action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_volume_up);
     action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_volume_down);
@@ -115,7 +104,6 @@ void up_down_long_up_handler(ClickRecognizerRef recognizer, void *context) {
   else
     app_timer_reschedule(volumeHideTimer, 1000);
   flag_should_ignore_volume_reading = false;
-  //refreshTimer = app_timer_register(500, callBack, NULL);
 }
 static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
   action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, icon_button_selection);

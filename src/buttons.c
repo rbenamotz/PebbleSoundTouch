@@ -3,12 +3,11 @@
 
 static TextLayer* txt_button[6];
 static TextLayer* txt_info;
-//static GBitmap* bmp_big_off_button;
 static BitmapLayer* bmp_source;
-//static BitmapLayer* bmp_big_off_button_layer;
 static char button[6][2];
 static char power_off_text[6][2];
 static bool screen_loaded = false;
+static bool showing_sys_off = false;
 
 
 
@@ -31,7 +30,6 @@ static void select_short_click_handler(ClickRecognizerRef recognizer, void *cont
 }
 
 static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
-  //layer_set_hidden(bitmap_layer_get_layer(bmp_big_off_button_layer),false);
   GFont* font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
   for (int i=0; i<6; i++) {
     text_layer_set_text_color(txt_button[i], conf_title_text_color_fg);
@@ -39,6 +37,7 @@ static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *conte
     text_layer_set_text(txt_button[i], power_off_text[i]);
     text_layer_set_font(txt_button[i], font);
   }
+  showing_sys_off = true;
 }
 static void select_long_up_hanlder (ClickRecognizerRef recognizer, void *context) {
   shut_off();
@@ -132,11 +131,12 @@ void win_buttons_show() {
   //window_stack_pop_all(false);
   window_stack_push(window, true);
   read_presets();
+  showing_sys_off = false;
 }
 
 
 void win_buttons_refresh_data() {
-  if (!screen_loaded)
+  if (!screen_loaded || showing_sys_off)
     return;
   for (int i=0; i<6; i++) {
     if (i==selected_channel) {

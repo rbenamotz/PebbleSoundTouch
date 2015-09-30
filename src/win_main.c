@@ -11,6 +11,7 @@ static char message[120];
 static AppTimer *jsInitTimer;
 static bool should_ignore_ip_validation = false;
 
+
 static void callBack()  {
   if (!is_js_ready) {
     jsInitTimer = app_timer_register(100, callBack, NULL);
@@ -70,6 +71,7 @@ void validate_ip_completed() {
     win_now_playing_show();
     return;
   }
+  should_ignore_ip_validation = true;
   show_win_ip();
 }
 
