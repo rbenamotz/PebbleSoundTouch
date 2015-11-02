@@ -30,7 +30,7 @@ static void select_short_click_handler(ClickRecognizerRef recognizer, void *cont
 }
 
 static void select_long_down_hanlder (ClickRecognizerRef recognizer, void *context) {
-  GFont* font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
+  GFont font = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
   for (int i=0; i<6; i++) {
     text_layer_set_text_color(txt_button[i], conf_title_text_color_fg);
     text_layer_set_background_color(txt_button[i], conf_title_text_color_bg);

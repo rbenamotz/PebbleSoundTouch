@@ -91,7 +91,7 @@ void show_win_ip() {
   //IP Address
   current_selection = 3;
   r = GRect(0, y, w, h);
-  GFont* font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
   for (int i=0; i<4; i++) {
     txt_ip_part[i] = text_layer_create(r);
     text_layer_set_text_alignment(txt_ip_part[i], GTextAlignmentCenter);

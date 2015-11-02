@@ -126,7 +126,7 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_DOWN, next_track);
   window_long_click_subscribe(BUTTON_ID_DOWN, 0, down_long_down_hanlder, up_down_long_up_handler);
 }
-static void drawText(GContext* ctx, GRect r, char* text, GFont* font, GColor bg, GColor fg) {
+static void drawText(GContext* ctx, GRect r, char* text, GFont font, GColor bg, GColor fg) {
   graphics_context_set_fill_color(ctx, bg);
   graphics_context_set_text_color(ctx, fg);
   graphics_fill_rect(ctx, r,0, GCornerNone);
@@ -137,7 +137,8 @@ static void drawText(GContext* ctx, GRect r, char* text, GFont* font, GColor bg,
     y+= (r.size.h - sz.h) / 2 - 1;
     h = sz.h;
   }
-  GRect r1 = GRect(r.origin.x, y, r.size.w, h);
+  int x = r.origin.x;
+  GRect r1 = GRect(x, y, r.size.w, h);
   graphics_draw_text(ctx, text, font, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 }
 
@@ -189,25 +190,40 @@ static int drawTrackAndArtist(GContext* ctx, int y, GRect bounds) {
     txt1 = now_playing_track;
     txt2 = now_playing_artist;
   }
-  GRect r1 = GRect(2, y, bounds.size.w - 2, h_track);
-  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
-  GFont* f2 = fonts_get_system_font(FONT_KEY_GOTHIC_24);
-  GSize sz = graphics_text_layout_get_content_size(now_playing_track, f1, r1, GTextOverflowModeWordWrap, GTextAlignmentLeft); 
-  GRect r2 = GRect(2, y + sz.h + 2, bounds.size.w - 2, h_track - sz.h - 2);
-  graphics_draw_text(ctx, txt1, f1, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
-  graphics_draw_text(ctx, txt2, f2, r2, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  GFont f1 = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  GFont f2 = fonts_get_system_font(FONT_KEY_GOTHIC_24);
+  #ifdef PBL_ROUND
+    GRect r1 = GRect(8, y, bounds.size.w - 8, h_track);
+    graphics_draw_text(ctx, txt1, f1, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+    GSize sz = graphics_text_layout_get_content_size(txt1, f1, r1, GTextOverflowModeWordWrap, GTextAlignmentCenter); 
+    GRect r2 = GRect(8, y + sz.h + 2, bounds.size.w - 8, h_track - sz.h - 2);
+    graphics_draw_text(ctx, txt2, f2, r2, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+  #else
+    GRect r1 = GRect(2, y, bounds.size.w - 2, h_track);
+    graphics_draw_text(ctx, txt1, f1, r1, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    GSize sz = graphics_text_layout_get_content_size(txt1, f1, r1, GTextOverflowModeWordWrap, GTextAlignmentLeft); 
+    GRect r2 = GRect(2, y + sz.h + 2, bounds.size.w - 2, h_track - sz.h - 2);
+    graphics_draw_text(ctx, txt2, f2, r2, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  #endif
   return h_track;
 }
 
 static int drawItemName(GContext* ctx, int y, GRect bounds) {
   GRect r = GRect(0, y, bounds.size.w, h_source);
   GBitmap *channel_icon = get_image_by_source(now_playing_source);
+  #ifdef PBL_ROUND
+    if (channel_icon==NULL)
+      return h_source;
+    r = GRect(bounds.size.w /2, y, 32, h_source);
+    graphics_draw_bitmap_in_rect(ctx, channel_icon, r);
+  return h_source;
+  #endif
   if (channel_icon!=NULL) {
     r = GRect(0, y, 32, h_source);
     graphics_draw_bitmap_in_rect(ctx, channel_icon, r);
     r = GRect(33, y, bounds.size.w - 33, h_source);
   }
-  GFont* f1 = fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD);
+  GFont f1 = fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD);
   char *txt;
   if (strcmp(SOURCE_AIR_PLAY, now_playing_source)==0 || strcmp(SOURCE_AUX, now_playing_source)==0) 
     txt = now_playing_source;
@@ -224,8 +240,12 @@ static void now_playing_layer_update_callback(Layer *me, GContext* ctx) {
   }
   int y = 0;
   y+=drawItemName(ctx,y,bounds);
+  graphics_context_set_fill_color(ctx, conf_text_color_bg);
+  graphics_context_set_text_color(ctx, conf_text_color_fg);  
   graphics_context_set_stroke_color(ctx, conf_stroke_color);
+  #ifndef PBL_ROUND
   graphics_draw_line(ctx, GPoint(0,y), GPoint(bounds.size.w, y));
+  #endif
   y++;
   y+=drawTrackAndArtist(ctx,y,bounds);
 }
@@ -237,8 +257,15 @@ static void now_playing_time_layer_update_callback(Layer *me, GContext* ctx) {
   int y = bounds.size.h / 2;
   graphics_context_set_fill_color(ctx, conf_stroke_color);
   graphics_context_set_stroke_color(ctx, conf_stroke_color);
-  graphics_draw_line(ctx,GPoint(0,y) , GPoint(bounds.size.w,y));
-  int x = (bounds.size.w - 2) * now_playing_time_position  / now_playing_time_total;
+  #ifdef PBL_ROUND
+    int x = ACTION_BAR_WIDTH;
+    int w = bounds.size.w - 10;
+  #else
+    int x = 0;
+    int w = bounds.size.w;
+  #endif
+  graphics_draw_line(ctx,GPoint(x,y) , GPoint(w,y));
+  x += (w - 2) * now_playing_time_position  / now_playing_time_total;
   graphics_fill_circle(ctx, GPoint(x,y), 4);
 }
 

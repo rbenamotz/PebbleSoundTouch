@@ -106,10 +106,11 @@
     "shortName": "SoundTouch",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "3dfcf347-2b39-437f-9c3f-b00ec07a6b53",
-    "versionLabel": "1.10",
+    "versionLabel": "1.11",
     "watchapp": {
         "watchface": false
     }
