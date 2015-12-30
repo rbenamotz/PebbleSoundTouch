@@ -15,90 +15,90 @@
     "resources": {
         "media": [
             {
-                "file": "images/music_icon_play.png",
-                "name": "IMAGE_PLAY",
-                "type": "png"
-            },
-            {
                 "file": "images/music_icon_pause.png",
                 "name": "IMAGE_PAUSE",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/music_icon_forward.png",
                 "name": "IMAGE_SKIP_FW",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/music_icon_back.png",
                 "name": "IMAGE_SKIP_BW",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/source_spotify.png",
                 "name": "IMAGE_SOURCE_SPOTIFY",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/source_internet_deezer.png",
                 "name": "IMAGE_SOURCE_DEEZER",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/source_stored_music.png",
                 "name": "IMAGE_SOURCE_STORED_MUSIC",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/source_internet_radio.png",
                 "name": "IMAGE_SOURCE_INTERNET_RADIO",
-                "type": "png"
-            },
-            {
-                "file": "images/source_i_heart_radio.png",
-                "name": "IMAGE_SOURCE_IHEART_RADIO",
-                "type": "png"
-            },
-            {
-                "file": "images/AirplayIcon.png",
-                "name": "IMAGE_SOURCE_AIRPLAY",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/pandora_icon.png",
                 "name": "IMAGE_SOURCE_PANDORA",
-                "type": "png"
+                "type": "bitmap"
+            },
+            {
+                "file": "images/big_off.png",
+                "name": "IMAGE_BIG_OFF",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/music_icon_play.png",
+                "name": "IMAGE_PLAY",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/source_i_heart_radio.png",
+                "name": "IMAGE_SOURCE_IHEART_RADIO",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/AirplayIcon.png",
+                "name": "IMAGE_SOURCE_AIRPLAY",
+                "type": "bitmap"
             },
             {
                 "file": "images/small icon.png",
                 "menuIcon": true,
                 "name": "IMAGE_LOGO",
-                "type": "png"
-            },
-            {
-                "file": "images/big_off.png",
-                "name": "IMAGE_BIG_OFF",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/off.png",
                 "name": "IMAGE_OFF",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/buttons.png",
                 "name": "IMAGE_BUTTONS",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/voldown.png",
                 "name": "IMAGE_VOLUME_DOWN",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/volup.png",
                 "name": "IMAGE_VOLUME_UP",
-                "type": "png"
+                "type": "bitmap"
             }
         ]
     },
